@@ -1,8 +1,8 @@
 package br.edu.ifce.maracanau.controleacademico.model.enums;
 
-public enum Cargo {
+public enum CargoUsuario {
 
-    ADMIN,
-    SECRETARIA
+    SECRETARIO,
+    ADMIN
 
 }

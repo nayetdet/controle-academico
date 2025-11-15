@@ -1,6 +1,6 @@
 package br.edu.ifce.maracanau.controleacademico.model.enums;
 
-public enum Status {
+public enum StatusAluno {
 
     INATIVO,
     ATIVO
