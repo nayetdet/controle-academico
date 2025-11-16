@@ -5,6 +5,7 @@ public record DisciplinaDTO(
         String codigo,
         String nome,
         Integer cargaHoraria,
-        String semestre
+        String semestre,
+        UsuarioSimplificadoDTO responsavel
 ) {
 }

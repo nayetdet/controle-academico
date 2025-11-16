@@ -12,9 +12,11 @@ import org.springframework.stereotype.Component;
 public class AlunoMapper {
 
     private final AlunoRepository alunoRepository;
+    private final UsuarioMapper usuarioMapper;
 
-    public AlunoMapper(AlunoRepository alunoRepository) {
+    public AlunoMapper(AlunoRepository alunoRepository, UsuarioMapper usuarioMapper) {
         this.alunoRepository = alunoRepository;
+        this.usuarioMapper = usuarioMapper;
     }
 
     public Aluno toModel(String matricula) {
@@ -39,7 +41,8 @@ public class AlunoMapper {
                 aluno.getEmail(),
                 aluno.getMatricula(),
                 aluno.getDataNascimento(),
-                aluno.getStatus()
+                aluno.getStatus(),
+                usuarioMapper.toSimplificadoDTO(aluno.getResponsavel())
         );
     }
 

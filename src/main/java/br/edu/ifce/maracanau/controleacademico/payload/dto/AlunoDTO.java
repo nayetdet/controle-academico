@@ -10,6 +10,7 @@ public record AlunoDTO(
         String email,
         String matricula,
         LocalDate dataNascimento,
-        StatusAluno status
+        StatusAluno status,
+        UsuarioSimplificadoDTO responsavel
 ) {
 }

@@ -12,9 +12,11 @@ import org.springframework.stereotype.Component;
 public class DisciplinaMapper {
 
     private final DisciplinaRepository disciplinaRepository;
+    private final UsuarioMapper usuarioMapper;
 
-    public DisciplinaMapper(DisciplinaRepository disciplinaRepository) {
+    public DisciplinaMapper(DisciplinaRepository disciplinaRepository, UsuarioMapper usuarioMapper) {
         this.disciplinaRepository = disciplinaRepository;
+        this.usuarioMapper = usuarioMapper;
     }
 
     public Disciplina toModel(String codigo) {
@@ -37,7 +39,8 @@ public class DisciplinaMapper {
                 disciplina.getCodigo(),
                 disciplina.getNome(),
                 disciplina.getCargaHoraria(),
-                disciplina.getSemestre()
+                disciplina.getSemestre(),
+                usuarioMapper.toSimplificadoDTO(disciplina.getResponsavel())
         );
     }
 

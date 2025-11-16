@@ -19,4 +19,14 @@ public class UsuarioValidator {
         }
     }
 
+    public void validateLoginOnUpdate(String loginAntigo, String loginNovo) {
+        if (loginNovo == null || loginNovo.equals(loginAntigo)) {
+            return;
+        }
+
+        if (usuarioRepository.existsByLogin(loginNovo)) {
+            throw new UsuarioLoginConflictException();
+        }
+    }
+
 }

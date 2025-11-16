@@ -1,4 +1,14 @@
 package br.edu.ifce.maracanau.controleacademico.payload.request;
 
-public record MatriculaDisciplinaRequest() {
+import br.edu.ifce.maracanau.controleacademico.model.enums.SituacaoMatricula;
+
+import java.time.LocalDate;
+
+public record MatriculaDisciplinaRequest(
+        String matriculaAluno,
+        String codigoDisciplina,
+        LocalDate dataMatricula,
+        SituacaoMatricula situacao,
+        Double notaFinal
+) {
 }
