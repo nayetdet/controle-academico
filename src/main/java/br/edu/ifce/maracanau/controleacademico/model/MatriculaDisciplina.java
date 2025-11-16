@@ -9,6 +9,41 @@ import java.time.LocalDate;
 @Table(name = "matricula_disciplinas")
 public class MatriculaDisciplina extends BaseModel {
 
+    public MatriculaDisciplina() {}
+
+    public MatriculaDisciplina(
+            Usuario responsavel,
+            Aluno aluno,
+            Disciplina disciplina,
+            LocalDate dataMatricula,
+            SituacaoMatricula situacao,
+            Double notaFinal
+    ) {
+        super(responsavel);
+        this.aluno = aluno;
+        this.disciplina = disciplina;
+        this.dataMatricula = dataMatricula;
+        this.situacao = situacao;
+        this.notaFinal = notaFinal;
+    }
+
+    public MatriculaDisciplina(
+            Long id,
+            Usuario responsavel,
+            Aluno aluno,
+            Disciplina disciplina,
+            LocalDate dataMatricula,
+            SituacaoMatricula situacao,
+            Double notaFinal
+    ) {
+        super(id, responsavel);
+        this.aluno = aluno;
+        this.disciplina = disciplina;
+        this.dataMatricula = dataMatricula;
+        this.situacao = situacao;
+        this.notaFinal = notaFinal;
+    }
+
     @ManyToOne(optional = false)
     @JoinColumn(name = "aluno_id", nullable = false)
     private Aluno aluno;

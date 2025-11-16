@@ -1,15 +1,49 @@
 package br.edu.ifce.maracanau.controleacademico.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "disciplinas")
+@Table(
+        name = "disciplinas",
+        indexes = {
+                @Index(name = "idx_codigo", columnList = "codigo", unique = true)
+        }
+)
 public class Disciplina extends BaseModel {
+
+    public Disciplina() {}
+
+    public Disciplina(
+            Usuario responsavel,
+            String codigo,
+            String nome,
+            Integer cargaHoraria,
+            String semestre
+    ) {
+        super(responsavel);
+        this.codigo = codigo;
+        this.nome = nome;
+        this.cargaHoraria = cargaHoraria;
+        this.semestre = semestre;
+    }
+
+    public Disciplina(
+            Long id,
+            Usuario responsavel,
+            String codigo,
+            String nome,
+            Integer cargaHoraria,
+            String semestre
+    ) {
+        super(id, responsavel);
+        this.codigo = codigo;
+        this.nome = nome;
+        this.cargaHoraria = cargaHoraria;
+        this.semestre = semestre;
+    }
 
     @Column(nullable = false, unique = true)
     private String codigo;
@@ -24,7 +58,7 @@ public class Disciplina extends BaseModel {
     private String semestre;
 
     @OneToMany(mappedBy = "disciplina")
-    private List<MatriculaDisciplina> matriculas;
+    private List<MatriculaDisciplina> matriculas = new ArrayList<>();
 
     public String getCodigo() {
         return codigo;

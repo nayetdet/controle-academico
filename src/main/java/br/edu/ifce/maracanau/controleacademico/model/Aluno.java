@@ -4,11 +4,47 @@ import br.edu.ifce.maracanau.controleacademico.model.enums.StatusAluno;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "alunos")
 public class Aluno extends BaseModel {
+
+    public Aluno() {}
+
+    public Aluno(
+            Usuario responsavel,
+            String nome,
+            String email,
+            String matricula,
+            LocalDate dataNascimento,
+            StatusAluno status
+    ) {
+        super(responsavel);
+        this.nome = nome;
+        this.email = email;
+        this.matricula = matricula;
+        this.dataNascimento = dataNascimento;
+        this.status = status;
+    }
+
+    public Aluno(
+            Long id,
+            Usuario responsavel,
+            String nome,
+            String email,
+            String matricula,
+            LocalDate dataNascimento,
+            StatusAluno status
+    ) {
+        super(id, responsavel);
+        this.nome = nome;
+        this.email = email;
+        this.matricula = matricula;
+        this.dataNascimento = dataNascimento;
+        this.status = status;
+    }
 
     @Column(nullable = false)
     private String nome;
@@ -27,7 +63,7 @@ public class Aluno extends BaseModel {
     private StatusAluno status;
 
     @OneToMany(mappedBy = "aluno")
-    private List<MatriculaDisciplina> matriculas;
+    private List<MatriculaDisciplina> matriculas = new ArrayList<>();
 
     public String getNome() {
         return nome;

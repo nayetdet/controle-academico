@@ -1,7 +1,6 @@
 package br.edu.ifce.maracanau.controleacademico.payload.request;
 
-public record DisciplinaRequest(
-        String codigo,
+public record DisciplinaUpdateRequest(
         String nome,
         Integer cargaHoraria,
         String semestre

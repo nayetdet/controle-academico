@@ -5,5 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface MatriculaRepository extends JpaRepository<MatriculaDisciplina, Long> {
+public interface MatriculaDisciplinaRepository extends JpaRepository<MatriculaDisciplina, Long> {
 }

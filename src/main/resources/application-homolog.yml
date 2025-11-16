@@ -1,0 +1,10 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:postgres}:${DB_PORT:5432}/${DB_NAME:controleacademico}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
+security:
+  jwt:
+    key:
+      private: file:/app/.secrets/keys/app.key
+      public: file:/app/.secrets/keys/app.pub
