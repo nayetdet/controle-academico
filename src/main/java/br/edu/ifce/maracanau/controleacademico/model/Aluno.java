@@ -8,7 +8,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "alunos")
+@Table(
+        name = "alunos",
+        indexes = {
+                @Index(name = "idx_matricula", columnList = "matricula", unique = true)
+        }
+)
 public class Aluno extends BaseModel {
 
     public Aluno() {}
@@ -49,7 +54,7 @@ public class Aluno extends BaseModel {
     @Column(nullable = false)
     private String nome;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String email;
 
     @Column(nullable = false, unique = true)
@@ -60,10 +65,10 @@ public class Aluno extends BaseModel {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private StatusAluno status;
+    private StatusAluno status = StatusAluno.ATIVO;
 
     @OneToMany(mappedBy = "aluno")
-    private List<MatriculaDisciplina> matriculas = new ArrayList<>();
+    private List<MatriculaDisciplina> matriculaDisciplinas = new ArrayList<>();
 
     public String getNome() {
         return nome;
@@ -105,12 +110,12 @@ public class Aluno extends BaseModel {
         this.status = status;
     }
 
-    public List<MatriculaDisciplina> getMatriculas() {
-        return matriculas;
+    public List<MatriculaDisciplina> getMatriculaDisciplinas() {
+        return matriculaDisciplinas;
     }
 
-    public void setMatriculas(List<MatriculaDisciplina> matriculas) {
-        this.matriculas = matriculas;
+    public void setMatriculaDisciplinas(List<MatriculaDisciplina> matriculas) {
+        this.matriculaDisciplinas = matriculas;
     }
 
 }

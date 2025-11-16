@@ -1,6 +1,6 @@
 package br.edu.ifce.maracanau.controleacademico.validator;
 
-import br.edu.ifce.maracanau.controleacademico.exception.DisciplinaCodeConflictException;
+import br.edu.ifce.maracanau.controleacademico.exception.DisciplinaCodigoConflictException;
 import br.edu.ifce.maracanau.controleacademico.repository.DisciplinaRepository;
 import org.springframework.stereotype.Component;
 
@@ -15,7 +15,7 @@ public class DisciplinaValidator {
 
     public void validateCodigo(String codigo) {
         if (codigo != null && disciplinaRepository.existsByCodigo(codigo)) {
-            throw new DisciplinaCodeConflictException();
+            throw new DisciplinaCodigoConflictException();
         }
     }
 

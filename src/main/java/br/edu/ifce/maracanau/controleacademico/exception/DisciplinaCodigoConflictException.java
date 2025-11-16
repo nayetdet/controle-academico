@@ -1,10 +1,10 @@
 package br.edu.ifce.maracanau.controleacademico.exception;
 
-public class DisciplinaCodeConflictException extends BaseException {
+public class DisciplinaCodigoConflictException extends BaseException {
 
     private static final String DEFAULT_ERROR_MESSAGE = "Uma disciplina com o mesmo código já existe.";
 
-    public DisciplinaCodeConflictException() {
+    public DisciplinaCodigoConflictException() {
         super(DEFAULT_ERROR_MESSAGE);
     }
 

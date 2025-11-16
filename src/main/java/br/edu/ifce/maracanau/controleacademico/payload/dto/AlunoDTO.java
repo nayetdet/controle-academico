@@ -1,4 +1,15 @@
 package br.edu.ifce.maracanau.controleacademico.payload.dto;
 
-public record AlunoDTO() {
+import br.edu.ifce.maracanau.controleacademico.model.enums.StatusAluno;
+
+import java.time.LocalDate;
+
+public record AlunoDTO(
+        Long id,
+        String nome,
+        String email,
+        String matricula,
+        LocalDate dataNascimento,
+        StatusAluno status
+) {
 }

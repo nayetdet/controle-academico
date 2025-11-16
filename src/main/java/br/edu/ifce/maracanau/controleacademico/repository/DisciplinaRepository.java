@@ -14,7 +14,8 @@ import java.util.Optional;
 public interface DisciplinaRepository extends JpaRepository<Disciplina, Long> {
 
     @Query("""
-        SELECT d FROM Disciplina d
+        SELECT d
+        FROM Disciplina d
         WHERE (:nome IS NULL OR LOWER(d.nome) LIKE LOWER(CONCAT('%', :nome, '%')))
             AND (:codigo IS NULL OR LOWER(d.codigo) LIKE LOWER(CONCAT('%', :codigo, '%')))
             AND (:cargaHorariaMinima IS NULL OR d.cargaHoraria >= :cargaMin)

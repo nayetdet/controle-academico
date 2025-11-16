@@ -1,6 +1,5 @@
 package br.edu.ifce.maracanau.controleacademico.payload.query;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import org.springframework.data.domain.PageRequest;
@@ -14,15 +13,11 @@ public abstract class BaseQuery {
     private Map<String, String> sortableFields = Map.of("id", "id");
 
     @Min(0)
-    @Schema(defaultValue = "0")
     private Integer pageNumber;
 
     @Min(0)
     @Max(50)
-    @Schema(defaultValue = "10")
     private Integer pageSize;
-
-    @Schema(defaultValue = "id", allowableValues = {"id", "-id"})
     private String orderBy;
 
     protected BaseQuery(Integer pageNumber, Integer pageSize, String orderBy) {

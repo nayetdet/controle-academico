@@ -1,7 +1,5 @@
 package br.edu.ifce.maracanau.controleacademico.payload.query;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-
 import java.util.Map;
 
 public class DisciplinaQuery extends BaseQuery {
@@ -24,24 +22,6 @@ public class DisciplinaQuery extends BaseQuery {
                 pageSize,
                 orderBy
         );
-    }
-
-    @Override
-    @Schema(
-            defaultValue = "id",
-            allowableValues = {
-                    "id",
-                    "codigo",
-                    "cargaHoraria",
-                    "semestre",
-                    "-id",
-                    "-codigo",
-                    "-cargaHoraria",
-                    "-semestre"
-            }
-    )
-    public String getOrderBy() {
-        return super.getOrderBy();
     }
 
     public String getNome() {

@@ -4,7 +4,6 @@ import br.edu.ifce.maracanau.controleacademico.model.Usuario;
 import br.edu.ifce.maracanau.controleacademico.payload.dto.UsuarioDTO;
 import br.edu.ifce.maracanau.controleacademico.payload.request.UsuarioRegistrationRequest;
 import br.edu.ifce.maracanau.controleacademico.repository.UsuarioRepository;
-import br.edu.ifce.maracanau.controleacademico.security.context.SecurityContextProvider;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -20,9 +19,9 @@ public class UsuarioMapper {
         return usuarioRepository.findByLogin(login).orElse(null);
     }
 
-    public Usuario toModel(UsuarioRegistrationRequest request, String senhaCriptografada) {
+    public Usuario toModel(UsuarioRegistrationRequest request, Usuario responsavel, String senhaCriptografada) {
         return new Usuario(
-                SecurityContextProvider.getContext(),
+                responsavel,
                 request.login(),
                 senhaCriptografada,
                 request.perfil()

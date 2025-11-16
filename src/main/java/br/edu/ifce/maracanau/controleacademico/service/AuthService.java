@@ -50,9 +50,9 @@ public class AuthService {
     }
 
     @Transactional
-    public JwtTokenDTO register(UsuarioRegistrationRequest request) {
+    public JwtTokenDTO register(UsuarioRegistrationRequest request, Usuario usuarioLogado) {
         usuarioValidator.validateLogin(request.login());
-        Usuario usuario = usuarioRepository.save(usuarioMapper.toModel(request, passwordEncoder.encode(request.senha())));
+        Usuario usuario = usuarioRepository.save(usuarioMapper.toModel(request, usuarioLogado, passwordEncoder.encode(request.senha())));
         return jwtTokenService.accessToken(usuario.getUsername(), usuario.getRoles());
     }
 

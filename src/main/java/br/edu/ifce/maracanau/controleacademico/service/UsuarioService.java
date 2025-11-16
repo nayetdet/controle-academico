@@ -8,7 +8,6 @@ import br.edu.ifce.maracanau.controleacademico.payload.dto.UsuarioDTO;
 import br.edu.ifce.maracanau.controleacademico.payload.query.UsuarioQuery;
 import br.edu.ifce.maracanau.controleacademico.payload.query.page.ApplicationPage;
 import br.edu.ifce.maracanau.controleacademico.repository.UsuarioRepository;
-import br.edu.ifce.maracanau.controleacademico.security.context.SecurityContextProvider;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,9 +37,12 @@ public class UsuarioService {
     }
 
     @Transactional
-    public void deleteByLogin(String login) {
+    public void deleteByLogin(String login, Usuario usuarioLogado) {
+        if (!login.equals(usuarioLogado.getLogin())) {
+            throw new UsuarioModificationForbiddenException();
+        }
+
         Usuario usuario = usuarioRepository.findByLogin(login).orElseThrow(UsuarioNotFoundException::new);
-        SecurityContextProvider.assertAuthorization(usuario.getLogin(), UsuarioModificationForbiddenException.class);
         usuarioRepository.delete(usuario);
     }
 

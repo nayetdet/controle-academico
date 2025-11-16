@@ -1,9 +1,9 @@
 package br.edu.ifce.maracanau.controleacademico.service;
 
-import br.edu.ifce.maracanau.controleacademico.exception.DisciplinaCodeConflictException;
 import br.edu.ifce.maracanau.controleacademico.exception.DisciplinaNotFoundException;
 import br.edu.ifce.maracanau.controleacademico.mapper.DisciplinaMapper;
 import br.edu.ifce.maracanau.controleacademico.model.Disciplina;
+import br.edu.ifce.maracanau.controleacademico.model.Usuario;
 import br.edu.ifce.maracanau.controleacademico.payload.dto.DisciplinaDTO;
 import br.edu.ifce.maracanau.controleacademico.payload.query.DisciplinaQuery;
 import br.edu.ifce.maracanau.controleacademico.payload.query.page.ApplicationPage;
@@ -54,9 +54,9 @@ public class DisciplinaService {
     }
 
     @Transactional
-    public DisciplinaDTO create(DisciplinaRequest request) {
+    public DisciplinaDTO create(DisciplinaRequest request, Usuario responsavel) {
         disciplinaValidator.validateCodigo(request.codigo());
-        Disciplina disciplina = disciplinaRepository.save(disciplinaMapper.toModel(request));
+        Disciplina disciplina = disciplinaRepository.save(disciplinaMapper.toModel(request, responsavel));
         return disciplinaMapper.toDTO(disciplina);
     }
 
