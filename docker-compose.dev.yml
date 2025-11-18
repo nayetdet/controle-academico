@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: controleacademico_postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: controleacademico
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - controleacademico-postgres-data:/var/lib/postgresql/data
+
+volumes:
+  controleacademico-postgres-data:

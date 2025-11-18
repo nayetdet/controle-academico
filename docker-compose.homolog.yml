@@ -1,0 +1,44 @@
+services:
+  controleacademico:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: controle_academico
+    ports:
+      - "8080:8080"
+    environment:
+      DB_USERNAME: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+    entrypoint: >
+      /bin/sh -c '
+        readonly OUTPUT_DIR="/app/.secrets/keys"
+        readonly PRIVATE_KEY_PATH="$${OUTPUT_DIR}/app.key"
+        readonly PUBLIC_KEY_PATH="$${OUTPUT_DIR}/app.pub"
+        if [ ! -f "$${PRIVATE_KEY_PATH}" ] || [ ! -f "$${PUBLIC_KEY_PATH}" ]; then
+          openssl genpkey -algorithm RSA -out "$${PRIVATE_KEY_PATH}" -pkeyopt rsa_keygen_bits:2048 &> /dev/null
+          openssl rsa -pubout -in "$${PRIVATE_KEY_PATH}" -out "$${PUBLIC_KEY_PATH}" &> /dev/null
+          echo "RSA Keys generated successfully in $${OUTPUT_DIR}"
+        fi
+        exec $0 "$@"
+      '
+    command: java -jar app.jar --spring.profiles.active=staging
+    volumes:
+      - controleacademico-secrets-data:/app/.secrets/keys
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:17
+    container_name: controleacademico_postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: controleacademico
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - controleacademico-postgres-data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  controleacademico-secrets-data:
+  controleacademico-postgres-data:

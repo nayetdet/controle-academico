@@ -180,3 +180,6 @@ README.html
 .DS_Store
 out/
 .micronaut/
+
+# Environment Variables
+*.env
