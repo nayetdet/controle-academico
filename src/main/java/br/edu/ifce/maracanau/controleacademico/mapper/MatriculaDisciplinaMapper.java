@@ -4,6 +4,7 @@ import br.edu.ifce.maracanau.controleacademico.model.MatriculaDisciplina;
 import br.edu.ifce.maracanau.controleacademico.model.Usuario;
 import br.edu.ifce.maracanau.controleacademico.payload.dto.MatriculaDisciplinaDTO;
 import br.edu.ifce.maracanau.controleacademico.payload.request.MatriculaDisciplinaRequest;
+import br.edu.ifce.maracanau.controleacademico.payload.request.MatriculaDisciplinaUpdateRequest;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -40,6 +41,12 @@ public class MatriculaDisciplinaMapper {
                 matriculaDisciplina.getNotaFinal(),
                 usuarioMapper.toSimplificadoDTO(matriculaDisciplina.getResponsavel())
         );
+    }
+
+    public void update(MatriculaDisciplina matriculaDisciplina, MatriculaDisciplinaUpdateRequest request) {
+        matriculaDisciplina.setDataMatricula(request.dataMatricula());
+        matriculaDisciplina.setSituacao(request.situacao());
+        matriculaDisciplina.setNotaFinal(request.notaFinal());
     }
 
 }
