@@ -10,18 +10,33 @@ public class DisciplinaQuery extends BaseQuery {
     private Integer cargaHorariaMaxima;
     private String semestre;
 
-    protected DisciplinaQuery(Integer pageNumber, Integer pageSize, String orderBy) {
+    public DisciplinaQuery(
+            Integer pageNumber,
+            Integer pageSize,
+            String orderBy,
+            String nome,
+            String codigo,
+            Integer cargaHorariaMinima,
+            Integer cargaHorariaMaxima,
+            String semestre
+    ) {
         super(
                 Map.of(
-                "id", "id",
-                "codigo", "codigo",
-                "cargaHoraria", "cargaHoraria",
-                "semestre", "semestre"
+                        "id", "id",
+                        "codigo", "codigo",
+                        "cargaHoraria", "cargaHoraria",
+                        "semestre", "semestre"
                 ),
                 pageNumber,
                 pageSize,
                 orderBy
         );
+
+        this.nome = nome;
+        this.codigo = codigo;
+        this.cargaHorariaMinima = cargaHorariaMinima;
+        this.cargaHorariaMaxima = cargaHorariaMaxima;
+        this.semestre = semestre;
     }
 
     public String getNome() {

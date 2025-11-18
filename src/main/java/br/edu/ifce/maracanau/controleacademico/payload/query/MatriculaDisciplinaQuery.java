@@ -14,7 +14,17 @@ public class MatriculaDisciplinaQuery extends BaseQuery {
     private Double notaFinalMinima;
     private Double notaFinalMaxima;
 
-    protected MatriculaDisciplinaQuery(Integer pageNumber, Integer pageSize, String orderBy) {
+    public MatriculaDisciplinaQuery(
+            Integer pageNumber,
+            Integer pageSize,
+            String orderBy,
+            String matriculaAluno,
+            String codigoDisciplina,
+            LocalDate dataMatricula,
+            SituacaoMatricula situacao,
+            Double notaFinalMinima,
+            Double notaFinalMaxima
+    ) {
         super(
                 Map.of(
                         "id", "id",
@@ -27,6 +37,13 @@ public class MatriculaDisciplinaQuery extends BaseQuery {
                 pageSize,
                 orderBy
         );
+
+        this.matriculaAluno = matriculaAluno;
+        this.codigoDisciplina = codigoDisciplina;
+        this.dataMatricula = dataMatricula;
+        this.situacao = situacao;
+        this.notaFinalMinima = notaFinalMinima;
+        this.notaFinalMaxima = notaFinalMaxima;
     }
 
     public String getMatriculaAluno() {

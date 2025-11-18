@@ -9,6 +9,7 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-@PreAuthorize("hasRole('ROLE_' + T(br.edu.ifce.maracanau.controleacademico.model.enums.PerfilUsuario).ADMIN.name())")
-public @interface PreAuthorizeAdmin {
+@PreAuthorize("isAnonymous()")
+public @interface PreAuthorizeAnonymous {
 }
+

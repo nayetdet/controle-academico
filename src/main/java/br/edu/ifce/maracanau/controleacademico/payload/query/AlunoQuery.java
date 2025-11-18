@@ -13,7 +13,16 @@ public class AlunoQuery extends BaseQuery {
     private LocalDate dataNascimentoMaxima;
     private StatusAluno status;
 
-    protected AlunoQuery(Integer pageNumber, Integer pageSize, String orderBy) {
+    public AlunoQuery(
+            Integer pageNumber,
+            Integer pageSize,
+            String orderBy,
+            String nome,
+            String matricula,
+            LocalDate dataNascimentoMinima,
+            LocalDate dataNascimentoMaxima,
+            StatusAluno status
+    ) {
         super(
                 Map.of(
                         "id", "id",
@@ -25,6 +34,12 @@ public class AlunoQuery extends BaseQuery {
                 pageSize,
                 orderBy
         );
+
+        this.nome = nome;
+        this.matricula = matricula;
+        this.dataNascimentoMinima = dataNascimentoMinima;
+        this.dataNascimentoMaxima = dataNascimentoMaxima;
+        this.status = status;
     }
 
     public String getNome() {

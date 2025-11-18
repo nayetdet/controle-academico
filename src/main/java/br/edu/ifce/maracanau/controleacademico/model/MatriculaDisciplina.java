@@ -6,7 +6,12 @@ import jakarta.persistence.*;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "matricula_disciplinas")
+@Table(
+        name = "matricula_disciplinas",
+        uniqueConstraints = {
+                @UniqueConstraint(name = "uk_matricula_aluno_disciplina", columnNames = {"aluno_id", "disciplina_id"})
+        }
+)
 public class MatriculaDisciplina extends BaseModel {
 
     public MatriculaDisciplina() {}

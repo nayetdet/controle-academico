@@ -9,6 +9,6 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-@PreAuthorize("hasRole('ROLE_' + T(br.edu.ifce.maracanau.controleacademico.model.enums.CargoUsuario).SECRETARIO.name())")
+@PreAuthorize("hasRole('ROLE_' + T(br.edu.ifce.maracanau.controleacademico.model.enums.PerfilUsuario).SECRETARIO.name())")
 public @interface PreAuthorizeSecretario {
 }
