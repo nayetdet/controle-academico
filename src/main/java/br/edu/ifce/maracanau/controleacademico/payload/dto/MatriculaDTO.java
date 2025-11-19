@@ -4,7 +4,7 @@ import br.edu.ifce.maracanau.controleacademico.model.enums.SituacaoMatricula;
 
 import java.time.LocalDate;
 
-public record MatriculaDisciplinaDTO(
+public record MatriculaDTO(
         Long id,
         AlunoDTO aluno,
         DisciplinaDTO disciplina,

@@ -68,7 +68,7 @@ public class Aluno extends BaseModel {
     private StatusAluno status = StatusAluno.ATIVO;
 
     @OneToMany(mappedBy = "aluno")
-    private List<MatriculaDisciplina> matriculaDisciplinas = new ArrayList<>();
+    private List<Matricula> matriculas = new ArrayList<>();
 
     public String getNome() {
         return nome;
@@ -110,12 +110,12 @@ public class Aluno extends BaseModel {
         this.status = status;
     }
 
-    public List<MatriculaDisciplina> getMatriculaDisciplinas() {
-        return matriculaDisciplinas;
+    public List<Matricula> getMatriculas() {
+        return matriculas;
     }
 
-    public void setMatriculaDisciplinas(List<MatriculaDisciplina> matriculas) {
-        this.matriculaDisciplinas = matriculas;
+    public void setMatriculas(List<Matricula> matriculas) {
+        this.matriculas = matriculas;
     }
 
 }

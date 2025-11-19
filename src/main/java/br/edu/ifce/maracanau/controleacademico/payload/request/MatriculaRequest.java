@@ -4,7 +4,9 @@ import br.edu.ifce.maracanau.controleacademico.model.enums.SituacaoMatricula;
 
 import java.time.LocalDate;
 
-public record MatriculaDisciplinaUpdateRequest(
+public record MatriculaRequest(
+        String matriculaAluno,
+        String codigoDisciplina,
         LocalDate dataMatricula,
         SituacaoMatricula situacao,
         Double notaFinal

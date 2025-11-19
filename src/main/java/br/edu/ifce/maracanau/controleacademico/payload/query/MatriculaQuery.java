@@ -5,7 +5,7 @@ import br.edu.ifce.maracanau.controleacademico.model.enums.SituacaoMatricula;
 import java.time.LocalDate;
 import java.util.Map;
 
-public class MatriculaDisciplinaQuery extends BaseQuery {
+public class MatriculaQuery extends BaseQuery {
 
     private String matriculaAluno;
     private String codigoDisciplina;
@@ -14,7 +14,7 @@ public class MatriculaDisciplinaQuery extends BaseQuery {
     private Double notaFinalMinima;
     private Double notaFinalMaxima;
 
-    public MatriculaDisciplinaQuery(
+    public MatriculaQuery(
             Integer pageNumber,
             Integer pageSize,
             String orderBy,

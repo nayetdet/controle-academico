@@ -7,16 +7,16 @@ import java.time.LocalDate;
 
 @Entity
 @Table(
-        name = "matricula_disciplinas",
+        name = "matriculas",
         uniqueConstraints = {
                 @UniqueConstraint(name = "uk_matricula_aluno_disciplina", columnNames = {"aluno_id", "disciplina_id"})
         }
 )
-public class MatriculaDisciplina extends BaseModel {
+public class Matricula extends BaseModel {
 
-    public MatriculaDisciplina() {}
+    public Matricula() {}
 
-    public MatriculaDisciplina(
+    public Matricula(
             Usuario responsavel,
             Aluno aluno,
             Disciplina disciplina,
@@ -32,7 +32,7 @@ public class MatriculaDisciplina extends BaseModel {
         this.notaFinal = notaFinal;
     }
 
-    public MatriculaDisciplina(
+    public Matricula(
             Long id,
             Usuario responsavel,
             Aluno aluno,

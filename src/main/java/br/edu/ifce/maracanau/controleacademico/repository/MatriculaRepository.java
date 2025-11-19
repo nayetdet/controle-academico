@@ -1,6 +1,6 @@
 package br.edu.ifce.maracanau.controleacademico.repository;
 
-import br.edu.ifce.maracanau.controleacademico.model.MatriculaDisciplina;
+import br.edu.ifce.maracanau.controleacademico.model.Matricula;
 import br.edu.ifce.maracanau.controleacademico.model.enums.SituacaoMatricula;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,11 +13,11 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 @Repository
-public interface MatriculaDisciplinaRepository extends JpaRepository<MatriculaDisciplina, Long> {
+public interface MatriculaRepository extends JpaRepository<Matricula, Long> {
 
     @Query("""
         SELECT m
-        FROM MatriculaDisciplina m
+        FROM Matricula m
         WHERE (:matriculaAluno IS NULL OR LOWER(m.aluno.matricula) LIKE LOWER(CONCAT('%', :matriculaAluno, '%')))
             AND (:codigoDisciplina IS NULL OR LOWER(m.disciplina.codigo) LIKE LOWER(CONCAT('%', :codigoDisciplina, '%')))
             AND (:dataMatricula IS NULL OR m.dataMatricula = :dataMatricula)
@@ -25,7 +25,7 @@ public interface MatriculaDisciplinaRepository extends JpaRepository<MatriculaDi
             AND (:notaFinalMinima IS NULL OR m.notaFinal >= :notaFinalMinima)
             AND (:notaFinalMaxima IS NULL OR m.notaFinal <= :notaFinalMaxima)
         """)
-    Page<MatriculaDisciplina> search(
+    Page<Matricula> search(
             @Param("matriculaAluno") String matriculaAluno,
             @Param("codigoDisciplina") String codigoDisciplina,
             @Param("dataMatricula") LocalDate dataMatricula,
@@ -35,7 +35,7 @@ public interface MatriculaDisciplinaRepository extends JpaRepository<MatriculaDi
             Pageable pageable
     );
 
-    Optional<MatriculaDisciplina> findByAlunoMatriculaAndDisciplinaCodigo(String matriculaAluno, String codigoDisciplina);
+    Optional<Matricula> findByAlunoMatriculaAndDisciplinaCodigo(String matriculaAluno, String codigoDisciplina);
     Boolean existsByAlunoMatriculaAndDisciplinaCodigo(String matriculaAluno, String codigoDisciplina);
     Boolean existsByAlunoMatriculaAndDisciplinaCodigoAndIdNot(String matriculaAluno, String codigoDisciplina, Long id);
     void deleteByAlunoMatriculaAndDisciplinaCodigo(String matriculaAluno, String codigoDisciplina);
