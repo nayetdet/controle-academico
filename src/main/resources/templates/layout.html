@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/springsecurity6">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${pageTitle} ?: 'Controle Acadêmico'">Controle Acadêmico</title>
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+</head>
+<body>
+<div th:fragment="layout(content)">
+    <header class="topbar">
+        <div class="brand">
+            <a th:href="@{/}">Controle Acadêmico</a>
+        </div>
+        <nav class="menu" sec:authorize="isAuthenticated()">
+            <a th:href="@{/alunos}">Alunos</a>
+            <a th:href="@{/matriculas}">Matrículas</a>
+            <a th:href="@{/disciplinas}">Disciplinas</a>
+        </nav>
+        <div class="user-info" sec:authorize="isAuthenticated()">
+            <span class="user-label">Olá, <span sec:authentication="name"></span></span>
+            <form th:action="@{/logout}" method="post" class="logout-form">
+                <button type="submit" class="btn btn-ghost">Sair</button>
+            </form>
+        </div>
+        <div class="user-info" sec:authorize="isAnonymous()">
+            <a class="btn btn-primary" th:href="@{/login}">Entrar</a>
+        </div>
+    </header>
+
+    <main class="container">
+        <div th:if="${successMessage}" class="alert success" th:text="${successMessage}"></div>
+        <div th:if="${errorMessage}" class="alert error" th:text="${errorMessage}"></div>
+        <section th:replace="${content}"></section>
+    </main>
+
+    <footer class="footer">
+        <span>IFCE Maracanaú — Tópicos em Java para a Web</span>
+    </footer>
+</div>
+</body>
+</html>

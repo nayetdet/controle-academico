@@ -1,7 +1,5 @@
 package br.edu.ifce.maracanau.controleacademico.config;
 
-import br.edu.ifce.maracanau.controleacademico.security.JwtTokenConverter;
-import br.edu.ifce.maracanau.controleacademico.security.JwtTokenFilter;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
@@ -14,6 +12,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,6 +25,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
+import org.springframework.http.HttpMethod;
 
 @EnableMethodSecurity
 @EnableWebSecurity
@@ -39,11 +39,26 @@ public class SecurityConfig {
     private RSAPublicKey publicKey;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtTokenFilter jwtTokenFilter, JwtTokenConverter jwtTokenConverter) throws Exception {
-        return http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtTokenConverter)))
-                .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
-                .build();
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+                .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/", "/login", "/css/**", "/images/**", "/js/**").permitAll()
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/disciplinas/**").hasAnyRole("ADMIN", "SECRETARIO")
+                        .requestMatchers("/disciplinas/**").hasRole("ADMIN")
+                        .requestMatchers("/alunos/**", "/matriculas/**").hasAnyRole("ADMIN", "SECRETARIO")
+                        .anyRequest().authenticated()
+                )
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+                .formLogin(form -> form
+                        .loginPage("/login")
+                        .defaultSuccessUrl("/", true)
+                        .permitAll()
+                )
+                .logout(logout -> logout.logoutSuccessUrl("/login?logout"))
+                .csrf(Customizer.withDefaults());
+
+        return http.build();
     }
 
     @Bean

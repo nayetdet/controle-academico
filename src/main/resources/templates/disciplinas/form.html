@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:replace="~{layout :: layout(~{::section})}">
+    <section>
+        <div class="page-header">
+            <h1 th:text="${modoEdicao} ? 'Editar disciplina' : 'Nova disciplina'"></h1>
+            <a class="btn btn-secondary" th:href="@{/disciplinas}">Voltar</a>
+        </div>
+        <div class="card">
+            <form th:action="${modoEdicao} ? @{|/disciplinas/${codigoDisciplina}|} : @{/disciplinas}"
+                  method="post"
+                  th:object="${modoEdicao} ? ${disciplinaUpdateRequest} : ${disciplinaRequest}"
+                  class="form-grid">
+                <div class="alert error" th:if="${#fields.hasGlobalErrors()}"
+                     th:text="${#fields.globalErrors()[0]}"></div>
+                <div class="form-group">
+                    <label for="codigo">Código</label>
+                    <div th:if="${!modoEdicao}">
+                        <input id="codigo" type="text" th:field="*{codigo}" required>
+                        <div class="field-error" th:errors="*{codigo}"></div>
+                    </div>
+                    <div th:if="${modoEdicao}">
+                        <input id="codigo" type="text" th:value="${codigoDisciplina}" readonly>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="nome">Nome</label>
+                    <input id="nome" type="text" th:field="*{nome}" required>
+                    <div class="field-error" th:errors="*{nome}"></div>
+                </div>
+                <div class="form-group">
+                    <label for="cargaHoraria">Carga horária</label>
+                    <input id="cargaHoraria" type="number" min="1" th:field="*{cargaHoraria}" required>
+                    <div class="field-error" th:errors="*{cargaHoraria}"></div>
+                </div>
+                <div class="form-group">
+                    <label for="semestre">Semestre</label>
+                    <input id="semestre" type="text" th:field="*{semestre}" placeholder="2024.1" required>
+                    <div class="field-error" th:errors="*{semestre}"></div>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary" th:text="${modoEdicao} ? 'Salvar' : 'Cadastrar'"></button>
+                    <a class="btn btn-secondary" th:href="@{/disciplinas}">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </section>
+</div>
+</body>
+</html>

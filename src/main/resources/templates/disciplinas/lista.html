@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/springsecurity6">
+<body>
+<div th:replace="~{layout :: layout(~{::section})}">
+    <section>
+        <div class="page-header">
+            <h1>Disciplinas</h1>
+            <a class="btn btn-primary" th:href="@{/disciplinas/nova}" sec:authorize="hasRole('ADMIN')">Nova disciplina</a>
+        </div>
+        <div class="card">
+            <table>
+                <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Nome</th>
+                    <th>C.H.</th>
+                    <th>Semestre</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="disciplina : ${disciplinas}">
+                    <td th:text="${disciplina.codigo()}"></td>
+                    <td th:text="${disciplina.nome()}"></td>
+                    <td th:text="${disciplina.cargaHoraria()} + 'h'"></td>
+                    <td th:text="${disciplina.semestre()}"></td>
+                    <td class="actions" sec:authorize="hasRole('ADMIN')">
+                        <a class="btn btn-secondary" th:href="@{|/disciplinas/${disciplina.codigo()}/editar|}">Editar</a>
+                        <form th:action="@{|/disciplinas/${disciplina.codigo()}/excluir|}" method="post">
+                            <button type="submit" class="btn btn-danger" onclick="return confirm('Deseja remover esta disciplina?')">Excluir</button>
+                        </form>
+                    </td>
+                </tr>
+                <tr th:if="${disciplinas == null or #lists.isEmpty(disciplinas)}">
+                    <td colspan="5">Nenhuma disciplina cadastrada.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>
+</body>
+</html>

@@ -1,0 +1,709 @@
+{
+  "info": {
+    "name": "Controle Acadêmico API",
+    "description": "Coleção Postman gerada a partir dos controllers REST do projeto controle-academico.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"login\": \"admin\",\n  \"senha\": \"admin\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Autentica o usuário e retorna um token JWT de acesso e refresh."
+          }
+        },
+        {
+          "name": "Registrar usuário",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"login\": \"novo.usuario\",\n  \"senha\": \"senha123\",\n  \"perfil\": \"SECRETARIO\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "register"
+              ]
+            },
+            "description": "Cria um novo usuário (requer token com perfil ADMIN)."
+          }
+        },
+        {
+          "name": "Refresh token",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"login\": \"admin\",\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/refresh",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "refresh"
+              ]
+            },
+            "description": "Gera um novo token de acesso a partir de um refresh token válido."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Usuários",
+      "item": [
+        {
+          "name": "Listar usuários",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/usuarios?pageNumber=0&pageSize=10&orderBy=id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "usuarios"
+              ],
+              "query": [
+                {
+                  "key": "pageNumber",
+                  "value": "0"
+                },
+                {
+                  "key": "pageSize",
+                  "value": "10"
+                },
+                {
+                  "key": "orderBy",
+                  "value": "id"
+                }
+              ]
+            },
+            "description": "Busca paginada de usuários (requer perfil ADMIN)."
+          }
+        },
+        {
+          "name": "Buscar usuário por login",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/usuarios/:login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "usuarios",
+                ":login"
+              ]
+            },
+            "description": "Retorna um usuário específico pelo login (requer perfil ADMIN)."
+          }
+        },
+        {
+          "name": "Atualizar usuário",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"login\": \"usuario.atualizado\",\n  \"senha\": \"novaSenha123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/usuarios/:login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "usuarios",
+                ":login"
+              ]
+            },
+            "description": "Atualiza dados de um usuário (requer perfil ADMIN)."
+          }
+        },
+        {
+          "name": "Excluir usuário",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/usuarios/:login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "usuarios",
+                ":login"
+              ]
+            },
+            "description": "Remove um usuário pelo login (requer perfil ADMIN)."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Alunos",
+      "item": [
+        {
+          "name": "Listar alunos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/alunos?pageNumber=0&pageSize=10&orderBy=id&nome=&matricula=&dataNascimentoMinima=&dataNascimentoMaxima=&status=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "alunos"
+              ],
+              "query": [
+                {
+                  "key": "pageNumber",
+                  "value": "0"
+                },
+                {
+                  "key": "pageSize",
+                  "value": "10"
+                },
+                {
+                  "key": "orderBy",
+                  "value": "id"
+                },
+                {
+                  "key": "nome",
+                  "value": ""
+                },
+                {
+                  "key": "matricula",
+                  "value": ""
+                },
+                {
+                  "key": "dataNascimentoMinima",
+                  "value": ""
+                },
+                {
+                  "key": "dataNascimentoMaxima",
+                  "value": ""
+                },
+                {
+                  "key": "status",
+                  "value": ""
+                }
+              ]
+            },
+            "description": "Busca paginada de alunos com filtros opcionais (requer perfil SECRETARIO)."
+          }
+        },
+        {
+          "name": "Listar matrículas de alunos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/alunos/matriculas?pageNumber=0&pageSize=10&orderBy=id&matriculaAluno=&codigoDisciplina=&dataMatricula=&situacao=&notaFinalMinima=&notaFinalMaxima=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "alunos",
+                "matriculas"
+              ],
+              "query": [
+                {
+                  "key": "pageNumber",
+                  "value": "0"
+                },
+                {
+                  "key": "pageSize",
+                  "value": "10"
+                },
+                {
+                  "key": "orderBy",
+                  "value": "id"
+                },
+                {
+                  "key": "matriculaAluno",
+                  "value": ""
+                },
+                {
+                  "key": "codigoDisciplina",
+                  "value": ""
+                },
+                {
+                  "key": "dataMatricula",
+                  "value": ""
+                },
+                {
+                  "key": "situacao",
+                  "value": ""
+                },
+                {
+                  "key": "notaFinalMinima",
+                  "value": ""
+                },
+                {
+                  "key": "notaFinalMaxima",
+                  "value": ""
+                }
+              ]
+            },
+            "description": "Busca paginada de matrículas com filtros opcionais (requer perfil SECRETARIO)."
+          }
+        },
+        {
+          "name": "Buscar aluno por matrícula",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/alunos/:matriculaAluno",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "alunos",
+                ":matriculaAluno"
+              ]
+            },
+            "description": "Retorna um aluno específico pela matrícula (requer perfil SECRETARIO)."
+          }
+        },
+        {
+          "name": "Buscar matrícula de aluno por matrícula e código de disciplina",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/alunos/:matriculaAluno/matriculas/:codigoDisciplina",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "alunos",
+                ":matriculaAluno",
+                "matriculas",
+                ":codigoDisciplina"
+              ]
+            },
+            "description": "Retorna uma matrícula específica de um aluno em uma disciplina (requer perfil SECRETARIO)."
+          }
+        },
+        {
+          "name": "Criar aluno",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"João da Silva\",\n  \"email\": \"joao.silva@example.com\",\n  \"matricula\": \"20230001\",\n  \"dataNascimento\": \"2000-01-01\",\n  \"status\": \"ATIVO\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/alunos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "alunos"
+              ]
+            },
+            "description": "Cria um novo aluno (requer perfil SECRETARIO)."
+          }
+        },
+        {
+          "name": "Criar matrícula de aluno",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"matriculaAluno\": \"20230001\",\n  \"codigoDisciplina\": \"MAT101\",\n  \"dataMatricula\": \"2023-08-01\",\n  \"situacao\": \"CURSANDO\",\n  \"notaFinal\": 0.0\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/alunos/matriculas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "alunos",
+                "matriculas"
+              ]
+            },
+            "description": "Cria uma nova matrícula de aluno em disciplina (requer perfil SECRETARIO)."
+          }
+        },
+        {
+          "name": "Atualizar aluno",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"João da Silva Atualizado\",\n  \"email\": \"joao.silva.atualizado@example.com\",\n  \"dataNascimento\": \"2000-01-01\",\n  \"status\": \"ATIVO\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/alunos/:matriculaAluno",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "alunos",
+                ":matriculaAluno"
+              ]
+            },
+            "description": "Atualiza dados de um aluno pela matrícula (requer perfil SECRETARIO)."
+          }
+        },
+        {
+          "name": "Atualizar matrícula de aluno",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dataMatricula\": \"2023-08-01\",\n  \"situacao\": \"APROVADO\",\n  \"notaFinal\": 9.5\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/alunos/:matriculaAluno/matriculas/:codigoDisciplina",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "alunos",
+                ":matriculaAluno",
+                "matriculas",
+                ":codigoDisciplina"
+              ]
+            },
+            "description": "Atualiza uma matrícula de aluno em disciplina (requer perfil SECRETARIO)."
+          }
+        },
+        {
+          "name": "Excluir aluno",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/alunos/:matriculaAluno",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "alunos",
+                ":matriculaAluno"
+              ]
+            },
+            "description": "Remove um aluno pela matrícula (requer perfil SECRETARIO)."
+          }
+        },
+        {
+          "name": "Excluir matrícula de aluno",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/alunos/:matriculaAluno/matriculas/:codigoDisciplina",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "alunos",
+                ":matriculaAluno",
+                "matriculas",
+                ":codigoDisciplina"
+              ]
+            },
+            "description": "Remove uma matrícula de aluno em disciplina (requer perfil SECRETARIO)."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Disciplinas",
+      "item": [
+        {
+          "name": "Listar disciplinas",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/disciplinas?pageNumber=0&pageSize=10&orderBy=id&nome=&codigo=&cargaHorariaMinima=&cargaHorariaMaxima=&semestre=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "disciplinas"
+              ],
+              "query": [
+                {
+                  "key": "pageNumber",
+                  "value": "0"
+                },
+                {
+                  "key": "pageSize",
+                  "value": "10"
+                },
+                {
+                  "key": "orderBy",
+                  "value": "id"
+                },
+                {
+                  "key": "nome",
+                  "value": ""
+                },
+                {
+                  "key": "codigo",
+                  "value": ""
+                },
+                {
+                  "key": "cargaHorariaMinima",
+                  "value": ""
+                },
+                {
+                  "key": "cargaHorariaMaxima",
+                  "value": ""
+                },
+                {
+                  "key": "semestre",
+                  "value": ""
+                }
+              ]
+            },
+            "description": "Busca paginada de disciplinas com filtros opcionais (requer perfil SECRETARIO)."
+          }
+        },
+        {
+          "name": "Buscar disciplina por código",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/disciplinas/:codigoDisciplina",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "disciplinas",
+                ":codigoDisciplina"
+              ]
+            },
+            "description": "Retorna uma disciplina específica pelo código (requer perfil SECRETARIO)."
+          }
+        },
+        {
+          "name": "Criar disciplina",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"codigo\": \"MAT101\",\n  \"nome\": \"Cálculo I\",\n  \"cargaHoraria\": 60,\n  \"semestre\": \"2023.1\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/disciplinas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "disciplinas"
+              ]
+            },
+            "description": "Cria uma nova disciplina (requer perfil SECRETARIO)."
+          }
+        },
+        {
+          "name": "Atualizar disciplina",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Cálculo I - Atualizado\",\n  \"cargaHoraria\": 60,\n  \"semestre\": \"2023.1\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/disciplinas/:codigoDisciplina",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "disciplinas",
+                ":codigoDisciplina"
+              ]
+            },
+            "description": "Atualiza dados de uma disciplina pelo código (requer perfil SECRETARIO)."
+          }
+        },
+        {
+          "name": "Excluir disciplina",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/disciplinas/:codigoDisciplina",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "disciplinas",
+                ":codigoDisciplina"
+              ]
+            },
+            "description": "Remove uma disciplina pelo código (requer perfil SECRETARIO)."
+          }
+        }
+      ]
+    }
+  ]
+}
+

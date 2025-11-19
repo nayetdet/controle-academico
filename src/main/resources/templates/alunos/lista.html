@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:replace="~{layout :: layout(~{::section})}">
+    <section>
+        <div class="page-header">
+            <h1>Alunos</h1>
+            <a class="btn btn-primary" th:href="@{/alunos/novo}">Novo aluno</a>
+        </div>
+        <div class="card">
+            <table>
+                <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Matrícula</th>
+                    <th>Email</th>
+                    <th>Nascimento</th>
+                    <th>Status</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="aluno : ${alunos}">
+                    <td th:text="${aluno.nome()}"></td>
+                    <td th:text="${aluno.matricula()}"></td>
+                    <td th:text="${aluno.email()}"></td>
+                    <td th:text="${#temporals.format(aluno.dataNascimento(), 'dd/MM/yyyy')}"></td>
+                    <td th:text="${aluno.status()}"></td>
+                    <td class="actions">
+                        <a class="btn btn-secondary" th:href="@{|/alunos/${aluno.matricula()}/editar|}">Editar</a>
+                        <form th:action="@{|/alunos/${aluno.matricula()}/excluir|}" method="post">
+                            <button type="submit" class="btn btn-danger" onclick="return confirm('Deseja remover este aluno?')">Excluir</button>
+                        </form>
+                    </td>
+                </tr>
+                <tr th:if="${alunos == null or #lists.isEmpty(alunos)}">
+                    <td colspan="6">Nenhum aluno cadastrado.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>
+</body>
+</html>

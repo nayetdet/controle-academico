@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:replace="~{layout :: layout(~{::section})}">
+    <section>
+        <div class="page-header">
+            <h1>Matrículas</h1>
+            <a class="btn btn-primary" th:href="@{/matriculas/nova}">Nova matrícula</a>
+        </div>
+        <div class="card">
+            <table>
+                <thead>
+                <tr>
+                    <th>Aluno</th>
+                    <th>Matrícula</th>
+                    <th>Disciplina</th>
+                    <th>Data</th>
+                    <th>Situação</th>
+                    <th>Nota</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="matricula : ${matriculas}">
+                    <td th:text="${matricula.aluno().nome()}"></td>
+                    <td th:text="${matricula.aluno().matricula()}"></td>
+                    <td th:text="${matricula.disciplina().nome()} + ' (' + matricula.disciplina().codigo() + ')'"></td>
+                    <td th:text="${#temporals.format(matricula.dataMatricula(), 'dd/MM/yyyy')}"></td>
+                    <td th:text="${matricula.situacao()}"></td>
+                    <td th:text="${matricula.notaFinal() != null ? matricula.notaFinal() : '-'}"></td>
+                    <td class="actions">
+                        <a class="btn btn-secondary"
+                           th:href="@{|/matriculas/${matricula.aluno().matricula()}/${matricula.disciplina().codigo()}/editar|}">Editar</a>
+                        <form th:action="@{|/matriculas/${matricula.aluno().matricula()}/${matricula.disciplina().codigo()}/excluir|}"
+                              method="post">
+                            <button type="submit" class="btn btn-danger" onclick="return confirm('Deseja remover esta matrícula?')">Excluir</button>
+                        </form>
+                    </td>
+                </tr>
+                <tr th:if="${matriculas == null or #lists.isEmpty(matriculas)}">
+                    <td colspan="7">Nenhuma matrícula cadastrada.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>
+</body>
+</html>
