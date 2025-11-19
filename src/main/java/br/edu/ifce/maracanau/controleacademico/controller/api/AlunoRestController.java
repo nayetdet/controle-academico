@@ -11,7 +11,6 @@ import br.edu.ifce.maracanau.controleacademico.security.annotation.PreAuthorizeS
 import br.edu.ifce.maracanau.controleacademico.service.AlunoService;
 import br.edu.ifce.maracanau.controleacademico.service.MatriculaService;
 import jakarta.validation.Valid;
-import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -34,13 +33,13 @@ public class AlunoRestController {
     }
 
     @GetMapping
-    public ResponseEntity<ApplicationPage<AlunoDTO>> searchAlunos(@ParameterObject @Valid AlunoQuery query) {
+    public ResponseEntity<ApplicationPage<AlunoDTO>> searchAlunos(@ModelAttribute @Valid AlunoQuery query) {
         ApplicationPage<AlunoDTO> responses = alunoService.search(query);
         return ResponseEntity.ok(responses);
     }
 
     @GetMapping("/matriculas")
-    public ResponseEntity<ApplicationPage<MatriculaDTO>> searchMatriculas(@ParameterObject @Valid MatriculaQuery query) {
+    public ResponseEntity<ApplicationPage<MatriculaDTO>> searchMatriculas(@ModelAttribute @Valid MatriculaQuery query) {
         ApplicationPage<MatriculaDTO> responses = matriculaService.search(query);
         return ResponseEntity.ok(responses);
     }

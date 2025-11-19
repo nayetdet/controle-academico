@@ -9,7 +9,6 @@ import br.edu.ifce.maracanau.controleacademico.payload.request.DisciplinaUpdateR
 import br.edu.ifce.maracanau.controleacademico.security.annotation.PreAuthorizeSecretario;
 import br.edu.ifce.maracanau.controleacademico.service.DisciplinaService;
 import jakarta.validation.Valid;
-import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -30,7 +29,7 @@ public class DisciplinaRestController {
     }
 
     @GetMapping
-    public ResponseEntity<ApplicationPage<DisciplinaDTO>> searchDisciplinas(@ParameterObject @Valid DisciplinaQuery query) {
+    public ResponseEntity<ApplicationPage<DisciplinaDTO>> searchDisciplinas(@ModelAttribute @Valid DisciplinaQuery query) {
         ApplicationPage<DisciplinaDTO> responses = disciplinaService.search(query);
         return ResponseEntity.ok(responses);
     }

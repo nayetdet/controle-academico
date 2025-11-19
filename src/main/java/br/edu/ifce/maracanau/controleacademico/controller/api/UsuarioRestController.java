@@ -8,7 +8,6 @@ import br.edu.ifce.maracanau.controleacademico.payload.request.UsuarioUpdateRequ
 import br.edu.ifce.maracanau.controleacademico.security.annotation.PreAuthorizeAdmin;
 import br.edu.ifce.maracanau.controleacademico.service.UsuarioService;
 import jakarta.validation.Valid;
-import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -27,7 +26,7 @@ public class UsuarioRestController {
     }
 
     @GetMapping
-    public ResponseEntity<ApplicationPage<UsuarioDTO>> searchUsuarios(@ParameterObject @Valid UsuarioQuery query) {
+    public ResponseEntity<ApplicationPage<UsuarioDTO>> searchUsuarios(@ModelAttribute @Valid UsuarioQuery query) {
         ApplicationPage<UsuarioDTO> responses = usuarioService.search(query);
         return ResponseEntity.ok(responses);
     }
