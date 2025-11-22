@@ -1,14 +1,44 @@
 <!DOCTYPE html>
-<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Alunos | Controle Acadêmico</title>
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+</head>
 <body>
-<div th:replace="~{layout :: layout(~{::section})}">
-    <section>
-        <div class="page-header">
-            <h1>Alunos</h1>
+<header class="topbar">
+    <div class="topbar__brand">
+        <a th:href="@{/}">Controle Acadêmico</a>
+    </div>
+    <nav class="topbar__links">
+        <a th:href="@{/alunos}" sec:authorize="hasAnyRole('ADMIN','SECRETARIA')">Alunos</a>
+        <a th:href="@{/matriculas}" sec:authorize="hasAnyRole('ADMIN','SECRETARIA')">Matrículas</a>
+        <a th:href="@{/disciplinas}" sec:authorize="hasRole('ADMIN')">Disciplinas</a>
+    </nav>
+    <div class="topbar__user" sec:authorize="isAnonymous()">
+        <a class="btn btn-primary" th:href="@{/login}">Entrar</a>
+    </div>
+    <div class="topbar__user" sec:authorize="isAuthenticated()">
+        <span>Olá, <strong sec:authentication="name"></strong></span>
+        <form class="logout-form" th:action="@{/logout}" method="post">
+            <button type="submit">Sair</button>
+        </form>
+    </div>
+</header>
+
+<main class="container">
+    <h1 class="page-title">Alunos</h1>
+    <div class="alert success" th:if="${mensagemSucesso}" th:text="${mensagemSucesso}"></div>
+    <div class="alert error" th:if="${mensagemErro}" th:text="${mensagemErro}"></div>
+
+    <div class="card">
+        <div class="actions">
+            <p class="muted">Gerencie estudantes matriculados</p>
             <a class="btn btn-primary" th:href="@{/alunos/novo}">Novo aluno</a>
         </div>
-        <div class="card">
-            <table>
+
+        <div th:if="${!alunos.isEmpty()}">
+            <table class="table">
                 <thead>
                 <tr>
                     <th>Nome</th>
@@ -16,30 +46,35 @@
                     <th>Email</th>
                     <th>Nascimento</th>
                     <th>Status</th>
-                    <th></th>
+                    <th>Responsável</th>
+                    <th style="width: 180px;">Ações</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr th:each="aluno : ${alunos}">
-                    <td th:text="${aluno.nome()}"></td>
-                    <td th:text="${aluno.matricula()}"></td>
-                    <td th:text="${aluno.email()}"></td>
-                    <td th:text="${#temporals.format(aluno.dataNascimento(), 'dd/MM/yyyy')}"></td>
-                    <td th:text="${aluno.status()}"></td>
-                    <td class="actions">
-                        <a class="btn btn-secondary" th:href="@{|/alunos/${aluno.matricula()}/editar|}">Editar</a>
-                        <form th:action="@{|/alunos/${aluno.matricula()}/excluir|}" method="post">
-                            <button type="submit" class="btn btn-danger" onclick="return confirm('Deseja remover este aluno?')">Excluir</button>
+                    <td th:text="${aluno.nome}">Nome</td>
+                    <td th:text="${aluno.matricula}">2024001</td>
+                    <td th:text="${aluno.email}">email</td>
+                    <td th:text="${aluno.dataNascimento}">2000-01-01</td>
+                    <td>
+                        <span class="tag" th:classappend="${aluno.status.name() == 'ATIVO'} ? ' success' : ' warning'"
+                              th:text="${aluno.status}">ATIVO</span>
+                    </td>
+                    <td th:text="${aluno.responsavelLogin != null ? aluno.responsavelLogin : '-'}">admin</td>
+                    <td>
+                        <a class="btn btn-secondary" th:href="@{|/alunos/${aluno.id}/editar|}">Editar</a>
+                        <form th:action="@{|/alunos/${aluno.id}|}" method="post" style="display:inline;">
+                            <input type="hidden" name="_method" value="delete">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                            <button class="btn btn-danger" type="submit" onclick="return confirm('Deseja remover este aluno?')">Excluir</button>
                         </form>
                     </td>
-                </tr>
-                <tr th:if="${alunos == null or #lists.isEmpty(alunos)}">
-                    <td colspan="6">Nenhum aluno cadastrado.</td>
                 </tr>
                 </tbody>
             </table>
         </div>
-    </section>
-</div>
+        <div class="empty-state" th:if="${alunos.isEmpty()}">Nenhum aluno cadastrado.</div>
+    </div>
+</main>
 </body>
 </html>

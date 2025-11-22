@@ -1,27 +1,16 @@
 package br.edu.ifce.maracanau.controleacademico.controller;
 
-import br.edu.ifce.maracanau.controleacademico.exception.BaseException;
-import br.edu.ifce.maracanau.controleacademico.model.Usuario;
-import br.edu.ifce.maracanau.controleacademico.payload.dto.DisciplinaDTO;
-import br.edu.ifce.maracanau.controleacademico.payload.query.DisciplinaQuery;
-import br.edu.ifce.maracanau.controleacademico.payload.request.DisciplinaRequest;
-import br.edu.ifce.maracanau.controleacademico.payload.request.DisciplinaUpdateRequest;
+import br.edu.ifce.maracanau.controleacademico.dto.DisciplinaDTO;
 import br.edu.ifce.maracanau.controleacademico.service.DisciplinaService;
 import jakarta.validation.Valid;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.Optional;
+import java.util.List;
+import java.util.NoSuchElementException;
 
 @Controller
 @RequestMapping("/disciplinas")
@@ -34,102 +23,80 @@ public class DisciplinaController {
     }
 
     @GetMapping
-    public String listar(
-            @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
-            @RequestParam(value = "size", required = false, defaultValue = "10") Integer size,
-            @RequestParam(value = "orderBy", required = false, defaultValue = "id") String orderBy,
-            Model model
-    ) {
-        DisciplinaQuery query = new DisciplinaQuery(page, size, orderBy, null, null, null, null, null);
-        var disciplinasPage = disciplinaService.search(query);
-        model.addAttribute("disciplinas", disciplinasPage.content());
-        model.addAttribute("pageInfo", disciplinasPage.pageable());
+    public String listar(Model model) {
+        List<DisciplinaDTO> disciplinas = disciplinaService.findAll();
+        model.addAttribute("disciplinas", disciplinas);
         return "disciplinas/lista";
     }
 
-    @GetMapping("/nova")
-    public String nova(Model model) {
-        model.addAttribute("disciplinaRequest", new DisciplinaRequest(null, null, null, null));
-        model.addAttribute("modoEdicao", false);
+    @GetMapping("/novo")
+    public String novo(Model model) {
+        model.addAttribute("disciplina", new DisciplinaDTO(null, "", "", 0, "", null));
         return "disciplinas/form";
     }
 
     @PostMapping
-    public String criar(
-            @Valid @ModelAttribute("disciplinaRequest") DisciplinaRequest disciplinaRequest,
-            BindingResult bindingResult,
-            @AuthenticationPrincipal Usuario responsavel,
-            RedirectAttributes redirectAttributes,
-            Model model
+    public String salvar(
+            @Valid @ModelAttribute("disciplina") DisciplinaDTO disciplinaDTO,
+            BindingResult result,
+            RedirectAttributes redirectAttributes
     ) {
-        if (bindingResult.hasErrors()) {
-            model.addAttribute("modoEdicao", false);
+        if (result.hasErrors()) {
             return "disciplinas/form";
         }
-
         try {
-            disciplinaService.create(disciplinaRequest, responsavel);
-            redirectAttributes.addFlashAttribute("successMessage", "Disciplina criada com sucesso.");
+            disciplinaService.create(disciplinaDTO);
+            redirectAttributes.addFlashAttribute("mensagemSucesso", "Disciplina cadastrada com sucesso.");
             return "redirect:/disciplinas";
-        } catch (BaseException exception) {
-            bindingResult.rejectValue("codigo", "error.disciplina", exception.getMessage());
-            model.addAttribute("modoEdicao", false);
+        } catch (IllegalStateException ex) {
+            result.rejectValue("codigo", "codigo", ex.getMessage());
             return "disciplinas/form";
         }
     }
 
-    @GetMapping("/{codigo}/editar")
-    public String editar(@PathVariable String codigo, Model model, RedirectAttributes redirectAttributes) {
-        Optional<DisciplinaDTO> disciplinaDTO = disciplinaService.findByCodigo(codigo);
-        if (disciplinaDTO.isEmpty()) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Disciplina não encontrada.");
+    @GetMapping("/{id}/editar")
+    public String editar(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
+        try {
+            model.addAttribute("disciplina", disciplinaService.findById(id));
+            return "disciplinas/form";
+        } catch (NoSuchElementException ex) {
+            redirectAttributes.addFlashAttribute("mensagemErro", ex.getMessage());
             return "redirect:/disciplinas";
         }
-
-        DisciplinaDTO dto = disciplinaDTO.get();
-        model.addAttribute("disciplinaUpdateRequest", new DisciplinaUpdateRequest(dto.nome(), dto.cargaHoraria(), dto.semestre()));
-        model.addAttribute("codigoDisciplina", dto.codigo());
-        model.addAttribute("modoEdicao", true);
-        return "disciplinas/form";
     }
 
-    @PostMapping("/{codigo}")
+    @PostMapping(path = "/{id}", params = "_method=put")
     public String atualizar(
-            @PathVariable String codigo,
-            @Valid @ModelAttribute("disciplinaUpdateRequest") DisciplinaUpdateRequest disciplinaUpdateRequest,
-            BindingResult bindingResult,
-            RedirectAttributes redirectAttributes,
-            Model model
+            @PathVariable Long id,
+            @Valid @ModelAttribute("disciplina") DisciplinaDTO disciplinaDTO,
+            BindingResult result,
+            RedirectAttributes redirectAttributes
     ) {
-        if (bindingResult.hasErrors()) {
-            model.addAttribute("modoEdicao", true);
-            model.addAttribute("codigoDisciplina", codigo);
+        if (result.hasErrors()) {
             return "disciplinas/form";
         }
-
         try {
-            disciplinaService.update(codigo, disciplinaUpdateRequest);
-            redirectAttributes.addFlashAttribute("successMessage", "Disciplina atualizada com sucesso.");
+            disciplinaService.update(id, disciplinaDTO);
+            redirectAttributes.addFlashAttribute("mensagemSucesso", "Disciplina atualizada com sucesso.");
             return "redirect:/disciplinas";
-        } catch (BaseException exception) {
-            bindingResult.reject("error.disciplina", exception.getMessage());
-            model.addAttribute("modoEdicao", true);
-            model.addAttribute("codigoDisciplina", codigo);
+        } catch (IllegalStateException ex) {
+            result.rejectValue("codigo", "codigo", ex.getMessage());
             return "disciplinas/form";
+        } catch (NoSuchElementException ex) {
+            redirectAttributes.addFlashAttribute("mensagemErro", ex.getMessage());
+            return "redirect:/disciplinas";
         }
     }
 
-    @PostMapping("/{codigo}/excluir")
-    public String excluir(@PathVariable String codigo, RedirectAttributes redirectAttributes) {
+    @PostMapping(path = "/{id}", params = "_method=delete")
+    public String remover(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
-            disciplinaService.deleteByCodigo(codigo);
-            redirectAttributes.addFlashAttribute("successMessage", "Disciplina removida com sucesso.");
-        } catch (DataIntegrityViolationException exception) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Não é possível remover a disciplina pois existem matrículas vinculadas.");
-        } catch (BaseException exception) {
-            redirectAttributes.addFlashAttribute("errorMessage", exception.getMessage());
+            disciplinaService.deleteById(id);
+            redirectAttributes.addFlashAttribute("mensagemSucesso", "Disciplina removida com sucesso.");
+        } catch (IllegalStateException | NoSuchElementException ex) {
+            redirectAttributes.addFlashAttribute("mensagemErro", ex.getMessage());
         }
-
         return "redirect:/disciplinas";
     }
+
 }

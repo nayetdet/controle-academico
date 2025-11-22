@@ -1,28 +1,17 @@
 package br.edu.ifce.maracanau.controleacademico.controller;
 
-import br.edu.ifce.maracanau.controleacademico.exception.BaseException;
-import br.edu.ifce.maracanau.controleacademico.model.Usuario;
+import br.edu.ifce.maracanau.controleacademico.dto.AlunoDTO;
 import br.edu.ifce.maracanau.controleacademico.model.enums.StatusAluno;
-import br.edu.ifce.maracanau.controleacademico.payload.dto.AlunoDTO;
-import br.edu.ifce.maracanau.controleacademico.payload.query.AlunoQuery;
-import br.edu.ifce.maracanau.controleacademico.payload.request.AlunoRequest;
-import br.edu.ifce.maracanau.controleacademico.payload.request.AlunoUpdateRequest;
 import br.edu.ifce.maracanau.controleacademico.service.AlunoService;
 import jakarta.validation.Valid;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.Optional;
+import java.util.List;
+import java.util.NoSuchElementException;
 
 @Controller
 @RequestMapping("/alunos")
@@ -34,108 +23,93 @@ public class AlunoController {
         this.alunoService = alunoService;
     }
 
-    @ModelAttribute("statusAlunos")
-    public StatusAluno[] statusAlunos() {
-        return StatusAluno.values();
-    }
-
     @GetMapping
-    public String listar(
-            @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
-            @RequestParam(value = "size", required = false, defaultValue = "10") Integer size,
-            @RequestParam(value = "orderBy", required = false, defaultValue = "id") String orderBy,
-            Model model
-    ) {
-        AlunoQuery query = new AlunoQuery(page, size, orderBy, null, null, null, null, null);
-        var alunosPage = alunoService.search(query);
-        model.addAttribute("alunos", alunosPage.content());
-        model.addAttribute("pageInfo", alunosPage.pageable());
+    public String findAll(Model model) {
+        List<AlunoDTO> alunos = alunoService.findAll();
+        model.addAttribute("alunos", alunos);
         return "alunos/lista";
     }
 
     @GetMapping("/novo")
-    public String novo(Model model) {
-        model.addAttribute("alunoRequest", new AlunoRequest(null, null, null, null, null));
-        model.addAttribute("modoEdicao", false);
+    public String createForm(Model model) {
+        model.addAttribute("aluno", new AlunoDTO(null, "", "", "", null, StatusAluno.ATIVO, null));
+        adicionarOpcoes(model);
         return "alunos/form";
     }
 
     @PostMapping
-    public String criar(
-            @Valid @ModelAttribute("alunoRequest") AlunoRequest alunoRequest,
-            BindingResult bindingResult,
-            @AuthenticationPrincipal Usuario usuarioLogado,
+    public String create(
+            @Valid @ModelAttribute("aluno") AlunoDTO alunoDTO,
+            BindingResult result,
             RedirectAttributes redirectAttributes,
             Model model
     ) {
-        if (bindingResult.hasErrors()) {
-            model.addAttribute("modoEdicao", false);
+        if (result.hasErrors()) {
+            adicionarOpcoes(model);
             return "alunos/form";
         }
-
         try {
-            alunoService.create(alunoRequest, usuarioLogado);
-            redirectAttributes.addFlashAttribute("successMessage", "Aluno cadastrado com sucesso.");
+            alunoService.create(alunoDTO);
+            redirectAttributes.addFlashAttribute("mensagemSucesso", "Aluno cadastrado com sucesso.");
             return "redirect:/alunos";
-        } catch (BaseException exception) {
-            bindingResult.rejectValue("matricula", "error.aluno", exception.getMessage());
-            model.addAttribute("modoEdicao", false);
+        } catch (IllegalStateException ex) {
+            result.rejectValue("matricula", "matricula", ex.getMessage());
+            adicionarOpcoes(model);
             return "alunos/form";
         }
     }
 
-    @GetMapping("/{matricula}/editar")
-    public String editar(@PathVariable String matricula, Model model, RedirectAttributes redirectAttributes) {
-        Optional<AlunoDTO> alunoDTO = alunoService.findByMatricula(matricula);
-        if (alunoDTO.isEmpty()) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Aluno não encontrado.");
+    @GetMapping("/{id}/editar")
+    public String edit(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
+        try {
+            model.addAttribute("aluno", alunoService.findById(id));
+            adicionarOpcoes(model);
+            return "alunos/form";
+        } catch (NoSuchElementException ex) {
+            redirectAttributes.addFlashAttribute("mensagemErro", ex.getMessage());
             return "redirect:/alunos";
         }
-
-        AlunoDTO dto = alunoDTO.get();
-        model.addAttribute("alunoUpdateRequest", new AlunoUpdateRequest(dto.nome(), dto.email(), dto.dataNascimento(), dto.status()));
-        model.addAttribute("matriculaAluno", dto.matricula());
-        model.addAttribute("modoEdicao", true);
-        return "alunos/form";
     }
 
-    @PostMapping("/{matricula}")
-    public String atualizar(
-            @PathVariable String matricula,
-            @Valid @ModelAttribute("alunoUpdateRequest") AlunoUpdateRequest alunoUpdateRequest,
-            BindingResult bindingResult,
+    @PostMapping(path = "/{id}", params = "_method=put")
+    public String update(
+            @PathVariable Long id,
+            @Valid @ModelAttribute("aluno") AlunoDTO alunoDTO,
+            BindingResult result,
             RedirectAttributes redirectAttributes,
             Model model
     ) {
-        if (bindingResult.hasErrors()) {
-            model.addAttribute("modoEdicao", true);
-            model.addAttribute("matriculaAluno", matricula);
+        if (result.hasErrors()) {
+            adicionarOpcoes(model);
             return "alunos/form";
         }
-
         try {
-            alunoService.update(matricula, alunoUpdateRequest);
-            redirectAttributes.addFlashAttribute("successMessage", "Dados do aluno atualizados.");
+            alunoService.update(id, alunoDTO);
+            redirectAttributes.addFlashAttribute("mensagemSucesso", "Aluno atualizado com sucesso.");
             return "redirect:/alunos";
-        } catch (BaseException exception) {
-            bindingResult.reject("error.aluno", exception.getMessage());
-            model.addAttribute("modoEdicao", true);
-            model.addAttribute("matriculaAluno", matricula);
+        } catch (IllegalStateException ex) {
+            result.rejectValue("matricula", "matricula", ex.getMessage());
+            adicionarOpcoes(model);
             return "alunos/form";
+        } catch (NoSuchElementException ex) {
+            redirectAttributes.addFlashAttribute("mensagemErro", ex.getMessage());
+            return "redirect:/alunos";
         }
     }
 
-    @PostMapping("/{matricula}/excluir")
-    public String excluir(@PathVariable String matricula, RedirectAttributes redirectAttributes) {
+    @PostMapping(path = "/{id}", params = "_method=delete")
+    public String delete(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
-            alunoService.deleteByMatricula(matricula);
-            redirectAttributes.addFlashAttribute("successMessage", "Aluno removido com sucesso.");
-        } catch (DataIntegrityViolationException exception) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Não é possível remover o aluno pois existem matrículas vinculadas.");
-        } catch (BaseException exception) {
-            redirectAttributes.addFlashAttribute("errorMessage", exception.getMessage());
+            alunoService.deleteById(id);
+            redirectAttributes.addFlashAttribute("mensagemSucesso", "Aluno removido com sucesso.");
+        } catch (IllegalStateException | NoSuchElementException ex) {
+            redirectAttributes.addFlashAttribute("mensagemErro", ex.getMessage());
         }
-
         return "redirect:/alunos";
     }
+
+    private void adicionarOpcoes(Model model) {
+        model.addAttribute("statusOptions", StatusAluno.values());
+    }
+
 }

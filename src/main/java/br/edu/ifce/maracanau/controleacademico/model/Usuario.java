@@ -18,22 +18,6 @@ import java.util.List;
 )
 public class Usuario extends BaseModel implements UserDetails {
 
-    public Usuario() {}
-
-    public Usuario(Usuario responsavel, String login, String senha, PerfilUsuario perfil) {
-        super(responsavel);
-        this.login = login;
-        this.senha = senha;
-        this.perfil = perfil;
-    }
-
-    public Usuario(Long id, Usuario responsavel, String login, String senha, PerfilUsuario perfil) {
-        super(id, responsavel);
-        this.login = login;
-        this.senha = senha;
-        this.perfil = perfil;
-    }
-
     @Column(nullable = false, unique = true)
     private String login;
 
@@ -44,15 +28,11 @@ public class Usuario extends BaseModel implements UserDetails {
     @Column(nullable = false)
     private PerfilUsuario perfil;
 
-    public List<String> getRoles() {
-        return getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
-    }
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        SimpleGrantedAuthority secretarioAuthority = new SimpleGrantedAuthority("ROLE_SECRETARIO");
+        SimpleGrantedAuthority secretarioAuthority = new SimpleGrantedAuthority("ROLE_SECRETARIA");
         SimpleGrantedAuthority adminAuthority = new SimpleGrantedAuthority("ROLE_ADMIN");
-        return perfil == PerfilUsuario.SECRETARIO
+        return perfil == PerfilUsuario.SECRETARIA
                 ? List.of(secretarioAuthority)
                 : List.of(secretarioAuthority, adminAuthority);
     }

@@ -1,40 +1,16 @@
 package br.edu.ifce.maracanau.controleacademico.mapper;
 
+import br.edu.ifce.maracanau.controleacademico.dto.AlunoDTO;
 import br.edu.ifce.maracanau.controleacademico.model.Aluno;
 import br.edu.ifce.maracanau.controleacademico.model.Usuario;
-import br.edu.ifce.maracanau.controleacademico.payload.dto.AlunoDTO;
-import br.edu.ifce.maracanau.controleacademico.payload.request.AlunoRequest;
-import br.edu.ifce.maracanau.controleacademico.payload.request.AlunoUpdateRequest;
-import br.edu.ifce.maracanau.controleacademico.repository.AlunoRepository;
-import org.springframework.stereotype.Component;
 
-@Component
-public class AlunoMapper {
+public final class AlunoMapper {
 
-    private final AlunoRepository alunoRepository;
-    private final UsuarioMapper usuarioMapper;
-
-    public AlunoMapper(AlunoRepository alunoRepository, UsuarioMapper usuarioMapper) {
-        this.alunoRepository = alunoRepository;
-        this.usuarioMapper = usuarioMapper;
+    private AlunoMapper() {
     }
 
-    public Aluno toModel(String matricula) {
-        return alunoRepository.findByMatricula(matricula).orElse(null);
-    }
-
-    public Aluno toModel(AlunoRequest request, Usuario responsavel) {
-        return new Aluno(
-                responsavel,
-                request.nome(),
-                request.email(),
-                request.matricula(),
-                request.dataNascimento(),
-                request.status()
-        );
-    }
-
-    public AlunoDTO toDTO(Aluno aluno) {
+    public static AlunoDTO toDto(Aluno aluno) {
+        String responsavel = aluno.getResponsavel() != null ? aluno.getResponsavel().getLogin() : null;
         return new AlunoDTO(
                 aluno.getId(),
                 aluno.getNome(),
@@ -42,13 +18,25 @@ public class AlunoMapper {
                 aluno.getMatricula(),
                 aluno.getDataNascimento(),
                 aluno.getStatus(),
-                usuarioMapper.toSimplificadoDTO(aluno.getResponsavel())
+                responsavel
         );
     }
 
-    public void update(Aluno aluno, AlunoUpdateRequest request) {
+    public static Aluno toEntity(AlunoDTO request, Usuario responsavel) {
+        Aluno aluno = new Aluno();
+        aluno.setResponsavel(responsavel);
         aluno.setNome(request.nome());
         aluno.setEmail(request.email());
+        aluno.setMatricula(request.matricula());
+        aluno.setDataNascimento(request.dataNascimento());
+        aluno.setStatus(request.status());
+        return aluno;
+    }
+
+    public static void copyToEntity(AlunoDTO request, Aluno aluno) {
+        aluno.setNome(request.nome());
+        aluno.setEmail(request.email());
+        aluno.setMatricula(request.matricula());
         aluno.setDataNascimento(request.dataNascimento());
         aluno.setStatus(request.status());
     }

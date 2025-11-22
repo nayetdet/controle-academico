@@ -1,6 +1,5 @@
 package br.edu.ifce.maracanau.controleacademico.validator;
 
-import br.edu.ifce.maracanau.controleacademico.exception.AlunoMatriculaConflictException;
 import br.edu.ifce.maracanau.controleacademico.repository.AlunoRepository;
 import org.springframework.stereotype.Component;
 
@@ -13,9 +12,12 @@ public class AlunoValidator {
         this.alunoRepository = alunoRepository;
     }
 
-    public void validateMatricula(String matricula) {
-        if (matricula != null && alunoRepository.existsByMatricula(matricula)) {
-            throw new AlunoMatriculaConflictException();
+    public void validarMatriculaUnica(String matricula, Long idAtual) {
+        boolean jaExiste = idAtual == null
+                ? alunoRepository.existsByMatriculaIgnoreCase(matricula)
+                : alunoRepository.existsByMatriculaIgnoreCaseAndIdNot(matricula, idAtual);
+        if (jaExiste) {
+            throw new IllegalStateException("Já existe um aluno com esta matrícula.");
         }
     }
 

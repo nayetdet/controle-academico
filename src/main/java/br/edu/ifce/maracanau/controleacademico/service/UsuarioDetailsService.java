@@ -1,6 +1,5 @@
 package br.edu.ifce.maracanau.controleacademico.service;
 
-import br.edu.ifce.maracanau.controleacademico.exception.UsuarioNotFoundException;
 import br.edu.ifce.maracanau.controleacademico.repository.UsuarioRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -18,7 +17,8 @@ public class UsuarioDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return usuarioRepository.findByLogin(username).orElseThrow(UsuarioNotFoundException::new);
+        return usuarioRepository.findByLogin(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado: " + username));
     }
 
 }

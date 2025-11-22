@@ -1,88 +1,93 @@
 package br.edu.ifce.maracanau.controleacademico.service;
 
-import br.edu.ifce.maracanau.controleacademico.exception.MatriculaAlunoAndDisciplinaConflictException;
-import br.edu.ifce.maracanau.controleacademico.exception.MatriculaDisciplinaNotFoundException;
+import br.edu.ifce.maracanau.controleacademico.dto.MatriculaDTO;
 import br.edu.ifce.maracanau.controleacademico.mapper.MatriculaMapper;
+import br.edu.ifce.maracanau.controleacademico.model.Aluno;
+import br.edu.ifce.maracanau.controleacademico.model.Disciplina;
 import br.edu.ifce.maracanau.controleacademico.model.Matricula;
 import br.edu.ifce.maracanau.controleacademico.model.Usuario;
-import br.edu.ifce.maracanau.controleacademico.payload.dto.MatriculaDTO;
-import br.edu.ifce.maracanau.controleacademico.payload.query.MatriculaQuery;
-import br.edu.ifce.maracanau.controleacademico.payload.query.page.ApplicationPage;
-import br.edu.ifce.maracanau.controleacademico.payload.request.MatriculaRequest;
-import br.edu.ifce.maracanau.controleacademico.payload.request.MatriculaUpdateRequest;
+import br.edu.ifce.maracanau.controleacademico.repository.AlunoRepository;
+import br.edu.ifce.maracanau.controleacademico.repository.DisciplinaRepository;
 import br.edu.ifce.maracanau.controleacademico.repository.MatriculaRepository;
-import br.edu.ifce.maracanau.controleacademico.validator.MatriculaDisciplinaValidator;
-import org.springframework.data.domain.Page;
+import br.edu.ifce.maracanau.controleacademico.validator.MatriculaValidator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
+import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 public class MatriculaService {
 
     private final MatriculaRepository matriculaRepository;
-    private final MatriculaMapper matriculaMapper;
-    private final MatriculaDisciplinaValidator matriculaDisciplinaValidator;
+    private final AlunoRepository alunoRepository;
+    private final DisciplinaRepository disciplinaRepository;
+    private final UsuarioService usuarioService;
+    private final MatriculaValidator matriculaValidator;
 
     public MatriculaService(
             MatriculaRepository matriculaRepository,
-            MatriculaMapper matriculaMapper,
-            MatriculaDisciplinaValidator matriculaDisciplinaValidator
+            AlunoRepository alunoRepository,
+            DisciplinaRepository disciplinaRepository,
+            UsuarioService usuarioService,
+            MatriculaValidator matriculaValidator
     ) {
         this.matriculaRepository = matriculaRepository;
-        this.matriculaMapper = matriculaMapper;
-        this.matriculaDisciplinaValidator = matriculaDisciplinaValidator;
+        this.alunoRepository = alunoRepository;
+        this.disciplinaRepository = disciplinaRepository;
+        this.usuarioService = usuarioService;
+        this.matriculaValidator = matriculaValidator;
     }
 
     @Transactional(readOnly = true)
-    public ApplicationPage<MatriculaDTO> search(MatriculaQuery query) {
-        Page<Matricula> page = matriculaRepository.search(
-                query.getMatriculaAluno(),
-                query.getCodigoDisciplina(),
-                query.getDataMatricula(),
-                query.getSituacao(),
-                query.getNotaFinalMinima(),
-                query.getNotaFinalMaxima(),
-                query.getPageable()
-        );
-
-        return new ApplicationPage<>(page.map(matriculaMapper::toDTO));
+    public List<MatriculaDTO> findAll() {
+        return matriculaRepository.findAll().stream()
+                .map(MatriculaMapper::toDto)
+                .toList();
     }
 
     @Transactional(readOnly = true)
-    public Optional<MatriculaDTO> findByAlunoMatriculaAndDisciplinaCodigo(String matriculaAluno, String codigoDisciplina) {
-        return matriculaRepository
-                .findByAlunoMatriculaAndDisciplinaCodigo(matriculaAluno, codigoDisciplina)
-                .map(matriculaMapper::toDTO);
+    public MatriculaDTO findById(Long id) {
+        Matricula matricula = matriculaRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Matrícula não encontrada"));
+        return MatriculaMapper.toDto(matricula);
     }
 
     @Transactional
-    public MatriculaDTO create(MatriculaRequest request, Usuario usuarioLogado) {
-        matriculaDisciplinaValidator.validateAlunoMatriculaAndDisciplinaCodigo(request.matriculaAluno(), request.codigoDisciplina());
-        Matricula matricula = matriculaRepository.save(matriculaMapper.toModel(request, usuarioLogado));
-        return matriculaMapper.toDTO(matricula);
+    public MatriculaDTO create(MatriculaDTO dto) {
+        matriculaValidator.validarDuplicidade(dto.alunoId(), dto.disciplinaId(), null);
+        Aluno aluno = alunoRepository.findById(dto.alunoId())
+                .orElseThrow(() -> new NoSuchElementException("Aluno não encontrado"));
+        Disciplina disciplina = disciplinaRepository.findById(dto.disciplinaId())
+                .orElseThrow(() -> new NoSuchElementException("Disciplina não encontrada"));
+        Usuario responsavel = usuarioService.getUsuarioLogadoObrigatorio();
+        Matricula matricula = MatriculaMapper.toEntity(dto, aluno, disciplina, responsavel);
+        return MatriculaMapper.toDto(matriculaRepository.save(matricula));
     }
 
     @Transactional
-    public MatriculaDTO update(String matriculaAluno, String codigoDisciplina, MatriculaUpdateRequest request) {
-        Matricula matricula = matriculaRepository.
-                findByAlunoMatriculaAndDisciplinaCodigo(matriculaAluno, codigoDisciplina)
-                .orElseThrow(MatriculaAlunoAndDisciplinaConflictException::new);
+    public MatriculaDTO update(Long id, MatriculaDTO dto) {
+        Matricula matricula = matriculaRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Matrícula não encontrada"));
 
-        matriculaDisciplinaValidator.validateAlunoMatriculaAndDisciplinaCodigoOnUpdate(matricula.getId(), matriculaAluno, codigoDisciplina);
-        matriculaMapper.update(matricula, request);
-        matricula = matriculaRepository.save(matricula);
-        return matriculaMapper.toDTO(matricula);
+        matriculaValidator.validarDuplicidade(dto.alunoId(), dto.disciplinaId(), id);
+        Aluno aluno = alunoRepository.findById(dto.alunoId())
+                .orElseThrow(() -> new NoSuchElementException("Aluno não encontrado"));
+
+        Disciplina disciplina = disciplinaRepository.findById(dto.disciplinaId())
+                .orElseThrow(() -> new NoSuchElementException("Disciplina não encontrada"));
+
+        MatriculaMapper.copyToEntity(dto, matricula, aluno, disciplina);
+        return MatriculaMapper.toDto(matriculaRepository.save(matricula));
     }
 
     @Transactional
-    public void deleteByAlunoMatriculaAndDisciplinaCodigo(String matriculaAluno, String codigoDisciplina) {
-        if (!matriculaRepository.existsByAlunoMatriculaAndDisciplinaCodigo(matriculaAluno, codigoDisciplina)) {
-            throw new MatriculaDisciplinaNotFoundException();
+    public void deleteById(Long id) {
+        try {
+            matriculaRepository.deleteById(id);
+        } catch (org.springframework.dao.EmptyResultDataAccessException e) {
+            throw new NoSuchElementException("Matrícula não encontrada");
         }
-
-        matriculaRepository.deleteByAlunoMatriculaAndDisciplinaCodigo(matriculaAluno, codigoDisciplina);
     }
 
 }

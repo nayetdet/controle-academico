@@ -14,41 +14,6 @@ import java.time.LocalDate;
 )
 public class Matricula extends BaseModel {
 
-    public Matricula() {}
-
-    public Matricula(
-            Usuario responsavel,
-            Aluno aluno,
-            Disciplina disciplina,
-            LocalDate dataMatricula,
-            SituacaoMatricula situacao,
-            Double notaFinal
-    ) {
-        super(responsavel);
-        this.aluno = aluno;
-        this.disciplina = disciplina;
-        this.dataMatricula = dataMatricula;
-        this.situacao = situacao;
-        this.notaFinal = notaFinal;
-    }
-
-    public Matricula(
-            Long id,
-            Usuario responsavel,
-            Aluno aluno,
-            Disciplina disciplina,
-            LocalDate dataMatricula,
-            SituacaoMatricula situacao,
-            Double notaFinal
-    ) {
-        super(id, responsavel);
-        this.aluno = aluno;
-        this.disciplina = disciplina;
-        this.dataMatricula = dataMatricula;
-        this.situacao = situacao;
-        this.notaFinal = notaFinal;
-    }
-
     @ManyToOne(optional = false)
     @JoinColumn(name = "aluno_id", nullable = false)
     private Aluno aluno;

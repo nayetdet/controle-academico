@@ -14,37 +14,6 @@ import java.util.List;
 )
 public class Disciplina extends BaseModel {
 
-    public Disciplina() {}
-
-    public Disciplina(
-            Usuario responsavel,
-            String codigo,
-            String nome,
-            Integer cargaHoraria,
-            String semestre
-    ) {
-        super(responsavel);
-        this.codigo = codigo;
-        this.nome = nome;
-        this.cargaHoraria = cargaHoraria;
-        this.semestre = semestre;
-    }
-
-    public Disciplina(
-            Long id,
-            Usuario responsavel,
-            String codigo,
-            String nome,
-            Integer cargaHoraria,
-            String semestre
-    ) {
-        super(id, responsavel);
-        this.codigo = codigo;
-        this.nome = nome;
-        this.cargaHoraria = cargaHoraria;
-        this.semestre = semestre;
-    }
-
     @Column(nullable = false, unique = true)
     private String codigo;
 

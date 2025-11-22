@@ -1,50 +1,38 @@
 package br.edu.ifce.maracanau.controleacademico.mapper;
 
+import br.edu.ifce.maracanau.controleacademico.dto.DisciplinaDTO;
 import br.edu.ifce.maracanau.controleacademico.model.Disciplina;
 import br.edu.ifce.maracanau.controleacademico.model.Usuario;
-import br.edu.ifce.maracanau.controleacademico.payload.dto.DisciplinaDTO;
-import br.edu.ifce.maracanau.controleacademico.payload.request.DisciplinaRequest;
-import br.edu.ifce.maracanau.controleacademico.payload.request.DisciplinaUpdateRequest;
-import br.edu.ifce.maracanau.controleacademico.repository.DisciplinaRepository;
-import org.springframework.stereotype.Component;
 
-@Component
-public class DisciplinaMapper {
+public final class DisciplinaMapper {
 
-    private final DisciplinaRepository disciplinaRepository;
-    private final UsuarioMapper usuarioMapper;
-
-    public DisciplinaMapper(DisciplinaRepository disciplinaRepository, UsuarioMapper usuarioMapper) {
-        this.disciplinaRepository = disciplinaRepository;
-        this.usuarioMapper = usuarioMapper;
+    private DisciplinaMapper() {
     }
 
-    public Disciplina toModel(String codigo) {
-        return disciplinaRepository.findByCodigo(codigo).orElse(null);
-    }
-
-    public Disciplina toModel(DisciplinaRequest request, Usuario responsavel) {
-        return new Disciplina(
-                responsavel,
-                request.codigo(),
-                request.nome(),
-                request.cargaHoraria(),
-                request.semestre()
-        );
-    }
-
-    public DisciplinaDTO toDTO(Disciplina disciplina) {
+    public static DisciplinaDTO toDto(Disciplina disciplina) {
+        String responsavel = disciplina.getResponsavel() != null ? disciplina.getResponsavel().getLogin() : null;
         return new DisciplinaDTO(
                 disciplina.getId(),
                 disciplina.getCodigo(),
                 disciplina.getNome(),
                 disciplina.getCargaHoraria(),
                 disciplina.getSemestre(),
-                usuarioMapper.toSimplificadoDTO(disciplina.getResponsavel())
+                responsavel
         );
     }
 
-    public void update(Disciplina disciplina, DisciplinaUpdateRequest request) {
+    public static Disciplina toEntity(DisciplinaDTO request, Usuario responsavel) {
+        Disciplina disciplina = new Disciplina();
+        disciplina.setResponsavel(responsavel);
+        disciplina.setCodigo(request.codigo());
+        disciplina.setNome(request.nome());
+        disciplina.setCargaHoraria(request.cargaHoraria());
+        disciplina.setSemestre(request.semestre());
+        return disciplina;
+    }
+
+    public static void copyToEntity(DisciplinaDTO request, Disciplina disciplina) {
+        disciplina.setCodigo(request.codigo());
         disciplina.setNome(request.nome());
         disciplina.setCargaHoraria(request.cargaHoraria());
         disciplina.setSemestre(request.semestre());
