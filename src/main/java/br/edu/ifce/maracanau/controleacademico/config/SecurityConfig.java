@@ -16,7 +16,7 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, UsuarioService usuarioService) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/login", "/css/**", "/images/**").permitAll()
@@ -25,7 +25,6 @@ public class SecurityConfig {
                         .requestMatchers("/alunos/**", "/matriculas/**").hasAnyRole("ADMIN", "SECRETARIA")
                         .anyRequest().authenticated()
                 )
-                .userDetailsService(usuarioService)
                 .formLogin(form -> form
                         .loginPage("/login")
                         .defaultSuccessUrl("/", true)
