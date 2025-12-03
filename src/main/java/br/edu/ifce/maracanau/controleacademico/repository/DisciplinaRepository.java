@@ -9,8 +9,4 @@ public interface DisciplinaRepository extends JpaRepository<Disciplina, Long> {
 
     Optional<Disciplina> findByCodigoIgnoreCase(String codigo);
 
-    boolean existsByCodigoIgnoreCase(String codigo);
-
-    boolean existsByCodigoIgnoreCaseAndIdNot(String codigo, Long id);
-
 }
